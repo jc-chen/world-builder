@@ -79,6 +79,12 @@ cameraControl.autoRotate = false;
 var worldFrame = new THREE.AxisHelper(2);
 scene.add(worldFrame)
 
+// Lighting
+var ambientLight = new THREE.AmbientLight('#fff');
+scene.add(ambientLight);
+var light = new THREE.DirectionalLight(0xFFFFFF, 1, 100);
+light.position.set(-10,10,0);
+scene.add(light);
 
 // Uniforms
 var cameraPositionUniform = {type: "v3", value: camera.position }
@@ -136,7 +142,7 @@ new THREE.SourceLoader().load(shaderFiles, function(shaders) {
 
 
 
-function loadOBJ(file, material, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
+function loadOBJ(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
   var onProgress = function(query) {
     if (query.lengthComputable) {
       var percentComplete = query.loaded / query.total * 100;
@@ -148,24 +154,23 @@ function loadOBJ(file, material, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
     console.log('Failed to load ' + file);
   };
 
-  var loader = new THREE.OBJLoader();
-  loader.load(file, function(object) {
-    object.traverse(function(child) {
-      if (child instanceof THREE.Mesh) {
-        child.material = material;
-      }
+  var mtlLoader = new THREE.MTLLoader();
+  mtlLoader.load(mat,function(materials) {
+    materials.preload();
+    var loader = new THREE.OBJLoader();
+    loader.setMaterials(materials);
+    loader.load(file, function(object) {
+      object.position.set(xOff, yOff, zOff);
+      object.rotation.x = xRot;
+      object.rotation.y = yRot;
+      object.rotation.z = zRot;
+      object.scale.set(scale, scale, scale);
+      scene.add(object);
     });
-
-    object.position.set(xOff, yOff, zOff);
-    object.rotation.x = xRot;
-    object.rotation.y = yRot;
-    object.rotation.z = zRot;
-    object.scale.set(scale, scale, scale);
-    scene.add(object)
   }, onProgress, onError);
-}
+};
 
-loadOBJ('obj/earth.obj',armadilloMaterial,1,0,0,0,0,0,0);
+loadOBJ('obj/earth.obj','obj/earth.mtl',1,0,0,0,0,0,0);
 
 // -------------------------------
 // ADD OBJECTS TO THE SCENE
