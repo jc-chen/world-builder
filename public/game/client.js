@@ -1,4 +1,4 @@
-
+/*
 //game stuff
 var socket = io();
 
@@ -6,6 +6,12 @@ Input.applyEventHandlers(); //might remove
 
 var game = Game.create(socket);
 game.init();
+*/
+
+///////////////////////////////////////////
+///////////////////////////////////////////
+///////////////////////////////////////////
+
 
 // Setup renderer
 var canvas = document.getElementById('canvas');
@@ -170,7 +176,7 @@ function loadOBJ(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
   }, onProgress, onError);
 };
 
-loadOBJ('obj/earth.obj','obj/earth.mtl',1,0,0,0,0,0,0);
+loadOBJ('obj/earthhipoly.obj','obj/earthhipoly.mtl',1,0,0,0,0,0,0);
 
 // -------------------------------
 // ADD OBJECTS TO THE SCENE
