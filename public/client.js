@@ -40,6 +40,7 @@ camera.position.set(0,10,20);
 camera.lookAt(scene.position);
 scene.add(camera);
 
+
 // COMMENT BELOW FOR VR CAMERA
 // ------------------------------
 
@@ -215,8 +216,9 @@ function loadOBJMTL(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
   }, onProgress, onError);
 };
 
+
 // LOADING ASSETS
-var path = '../../../assets/NATURE/Models/naturePack_';
+var path = 'assets/NATURE/Models/naturePack_';
 //need a better way to load all assets
 var asset1o = path+'001.obj';
 var asset1m = path+'001.mtl';
@@ -280,10 +282,10 @@ function loadOBJ(file, material, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
 
 // TO DO: Change meshPhongMaterial to real material shaders for highlighting
 var landMaterial = new THREE.MeshPhongMaterial({color: 0x89D044});
-loadOBJ('obj/pureobjearthland.obj',landMaterial,1,0,0,0,0,0,0);
+loadOBJ('public/obj/pureobjearthland.obj',landMaterial,1,0,0,0,0,0,0);
 
 var seaMaterial = new THREE.MeshPhongMaterial({color: 0x47A4C5});
-loadOBJ('obj/pureobjearthsea.obj',seaMaterial,1,0,0,0,0,0,0);
+loadOBJ('public/obj/pureobjearthsea.obj',seaMaterial,1,0,0,0,0,0,0);
 
 
 var skyboxGeometry = new THREE.BoxGeometry(1000,1000,1000);
