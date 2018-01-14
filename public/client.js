@@ -40,9 +40,6 @@ camera.position.set(0,10,20);
 camera.lookAt(scene.position);
 scene.add(camera);
 
-projector = new THREE.Projector();
-
-
 // COMMENT BELOW FOR VR CAMERA
 // ------------------------------
 
@@ -218,11 +215,6 @@ function loadOBJMTL(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
   }, onProgress, onError);
 };
 
-<<<<<<< HEAD:public/game/client.js
-//loadOBJMTL('obj/earthjoined.obj','obj/earthjoined.mtl',1,0,0,0,0,0,0);
-
-
-
 // LOADING ASSETS
 var path = '../../../assets/NATURE/Models/naturePack_';
 //need a better way to load all assets
@@ -283,10 +275,6 @@ function loadOBJ(file, material, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
 
 
 
-=======
-loadOBJ('public/obj/earthhipoly.obj','public/obj/earthhipoly.mtl',1,0,0,0,0,0,0);
->>>>>>> 1daaff87dcf03644db7edafacfba1a60797da13f:public/client.js
-
 // -------------------------------
 // ADD OBJECTS TO THE SCENE
 
@@ -296,8 +284,6 @@ loadOBJ('obj/pureobjearthland.obj',landMaterial,1,0,0,0,0,0,0);
 
 var seaMaterial = new THREE.MeshPhongMaterial({color: 0x47A4C5});
 loadOBJ('obj/pureobjearthsea.obj',seaMaterial,1,0,0,0,0,0,0);
-
-lmao.push();
 
 
 var skyboxGeometry = new THREE.BoxGeometry(1000,1000,1000);
