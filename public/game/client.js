@@ -40,16 +40,20 @@ camera.position.set(0,10,20);
 camera.lookAt(scene.position);
 scene.add(camera);
 
+projector = new THREE.Projector();
+
+
 // COMMENT BELOW FOR VR CAMERA
 // ------------------------------
 
 // Giving it some controls
 cameraControl = new THREE.OrbitControls(camera);
 cameraControl.damping = 0.2;
-cameraControl.autoRotate = false;
+//cameraControl.autoRotate = false;
+cameraControl.noPan = true;
+
 // ------------------------------
 // COMMENT ABOVE FOR VR CAMERA
-
 
 
 // UNCOMMENT BELOW FOR VR CAMERA
@@ -75,6 +79,9 @@ cameraControl.autoRotate = false;
 // UNCOMMENT ABOVE FOR VR CAMERA
 
 
+var intersectionObjects;
+var placementPos;
+
 // ------------------------------
 // LOADING MATERIALS AND TEXTURES
 
@@ -85,9 +92,10 @@ scene.add(worldFrame)
 // Lighting
 var ambientLight = new THREE.AmbientLight('#fff');
 scene.add(ambientLight);
-var light = new THREE.DirectionalLight(0xFFFFFF, 1, 100);
-light.position.set(-10,10,0);
-scene.add(light);
+var light = new THREE.DirectionalLight(0xFFFFFF, 0.7, 100);
+//light.position.set(camera.position.x-10,camera.position.y+10,camera.position.z-5);
+light.position.set(-10,10,9);
+camera.add(light);
 
 // Uniforms
 var cameraPositionUniform = {type: "v3", value: camera.position }
@@ -127,6 +135,7 @@ var skyboxMaterial = new THREE.ShaderMaterial({
     side: THREE.DoubleSide
 })
 
+
 // -------------------------------
 // LOADING SHADERS
 var shaderFiles = [
@@ -143,9 +152,9 @@ new THREE.SourceLoader().load(shaderFiles, function(shaders) {
   skyboxMaterial.fragmentShader = shaders['glsl/skybox.fs.glsl']
 })
 
+var lmao=[];
 
-
-function loadOBJ(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
+function loadOBJMTL(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
   var onProgress = function(query) {
     if (query.lengthComputable) {
       var percentComplete = query.loaded / query.total * 100;
@@ -158,9 +167,9 @@ function loadOBJ(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
   };
 
   var mtlLoader = new THREE.MTLLoader();
+  var loader = new THREE.OBJLoader();
   mtlLoader.load(mat,function(materials) {
     materials.preload();
-    var loader = new THREE.OBJLoader();
     loader.setMaterials(materials);
     loader.load(file, function(object) {
       object.position.set(xOff, yOff, zOff);
@@ -168,41 +177,213 @@ function loadOBJ(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
       object.rotation.y = yRot;
       object.rotation.z = zRot;
       object.scale.set(scale, scale, scale);
+
+      object.traverse( function ( child ) {
+        if ( child instanceof THREE.Mesh ) {
+          console.log("instance");
+          child.geometry.computeFaceNormals();
+          var mesh = new THREE.Mesh(child.geometry,child.material);
+          //lmao.push(mesh);
+
+          var fgeometry = new THREE.Geometry();
+          fgeometry.fromBufferGeometry(child.geometry);
+          //lmao = fgeometry.faces;
+          
+          var fgfaces
+          var faceGeom;
+          var facepush;
+          var faceMat;
+          for ( var i = 0; i < fgeometry.faces.length; i++ ) {
+            fgfaces = fgeometry.faces[i];
+            faceGeom = new THREE.Geometry();
+            faceGeom.vertices.push(fgfaces.a);
+            faceGeom.vertices.push(fgfaces.b);
+            faceGeom.vertices.push(fgfaces.c);
+            facepush = new THREE.Face3(0,1,2,fgfaces.normal,fgfaces.color,fgfaces.materialIndex);
+            faceGeom.faces.push(facepush);
+            faceGeom.computeFaceNormals();
+            faceGeom.computeVertexNormals();
+            faceMat = new THREE.MeshBasicMaterial();
+            //lmao.push(new THREE.Mesh(faceGeom)); 
+            //scene.add(lmao[i]);
+          }
+
+         // intersectionObjects.push(mesh);
+        }
+      });
+      //intersectionObjects.push(object);
       scene.add(object);
+
     });
   }, onProgress, onError);
 };
 
-loadOBJ('obj/earthhipoly.obj','obj/earthhipoly.mtl',1,0,0,0,0,0,0);
+//loadOBJMTL('obj/earthjoined.obj','obj/earthjoined.mtl',1,0,0,0,0,0,0);
+
+
+
+// LOADING ASSETS
+var path = '../../../assets/NATURE/Models/naturePack_';
+//need a better way to load all assets
+var asset1o = path+'001.obj';
+var asset1m = path+'001.mtl';
+var asset2o = path+'007.obj';
+var asset2m = path+'007.mtl';
+var asset3o = path+'0012.obj';
+var asset3m = path+'0012.mtl';
+
+
+function loadOBJ(file, material, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
+  var onProgress = function(query) {
+    if (query.lengthComputable) {
+      var percentComplete = query.loaded / query.total * 100;
+      console.log(Math.round(percentComplete, 2) + '% downloaded');
+    }
+  };
+  var onError = function() {
+    console.log('Failed to load ' + file);
+  };
+  var loader = new THREE.OBJLoader();
+  loader.load(file, function(object) {
+    object.position.set(xOff, yOff, zOff);
+    object.rotation.x = xRot;
+    object.rotation.y = yRot;
+    object.rotation.z = zRot;
+    object.scale.set(scale, scale, scale);
+
+    object.traverse(function(child) {
+      if (child instanceof THREE.Mesh) {
+        child.material = material;
+        child.geometry.computeFaceNormals();
+        lmao.push(new THREE.Mesh(child.geometry,material));
+        var fgeometry = new THREE.Geometry();
+        fgeometry.fromBufferGeometry(child.geometry);        
+        var fgfaces;
+        var faceGeom;
+        var facepush;
+        var faceMesh;
+        for ( var i = 0; i < fgeometry.faces.length; i++ ) {
+          fgfaces = fgeometry.faces[i];
+          faceGeom = new THREE.Geometry();
+          faceGeom.vertices.push(fgfaces.a);
+          faceGeom.vertices.push(fgfaces.b);
+          faceGeom.vertices.push(fgfaces.c);
+          facepush = new THREE.Face3(0,1,2,fgfaces.normal,fgfaces.color,fgfaces.materialIndex);
+          faceGeom.faces.push(facepush);
+          faceMesh = new THREE.Mesh(faceGeom,material);
+          //scene.add(faceMesh);
+          //lmao.push(faceMesh);     
+        } 
+      }
+    });
+    scene.add(object); 
+  }, onProgress, onError);
+}
+
+
+
 
 // -------------------------------
 // ADD OBJECTS TO THE SCENE
+
+// TO DO: Change meshPhongMaterial to real material shaders for highlighting
+var landMaterial = new THREE.MeshPhongMaterial({color: 0x89D044});
+loadOBJ('obj/pureobjearthland.obj',landMaterial,1,0,0,0,0,0,0);
+
+var seaMaterial = new THREE.MeshPhongMaterial({color: 0x47A4C5});
+loadOBJ('obj/pureobjearthsea.obj',seaMaterial,1,0,0,0,0,0,0);
+
+lmao.push();
+
 
 var skyboxGeometry = new THREE.BoxGeometry(1000,1000,1000);
 var skybox = new THREE.Mesh(skyboxGeometry,skyboxMaterial);
 scene.add(skybox);
 
+/*
+targetList = [];
 
-//loadDAE('./obj/ert.dae');
+// this material causes a mesh to use colors assigned to faces
+  var faceColorMaterial = new THREE.MeshBasicMaterial( 
+  { color: 0xffffff, vertexColors: THREE.FaceColors } );
+  
+  var sphereGeometry = new THREE.SphereGeometry( 80, 32, 16 );
+  for ( var i = 0; i < sphereGeometry.faces.length; i++ ) 
+  {
+    face = sphereGeometry.faces[ i ]; 
+    face.color.setRGB( 0, 0, 0.8 * Math.random() + 0.2 );   
+  }
+  var sphere = new THREE.Mesh( sphereGeometry, faceColorMaterial );
+  sphere.position.set(0, 50, 0);
+  scene.add(sphere);
+  
+  targetList.push(sphere);
+
+*/
 
 // -------------------------------
 // UPDATE ROUTINES
+
+document.addEventListener('mousedown', onDocumentMouseDown, false);
+
+
 var keyboard = new THREEx.KeyboardState();
 
 function checkKeyboard() { }
 
 function updateMaterials() {
   cameraPositionUniform.value = camera.position
+ // light.position.set(camera.position.x-30,camera.position.y+30,camera.position.z-5);
   armadilloMaterial.needsUpdate = true
   skyboxMaterial.needsUpdate = true
 }
+
+
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+
+function onDocumentMouseDown( event ) {
+  switch(event.button) {
+    case 2: { // left click
+      // calculate mouse position in normalized device coordinates
+      mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+      mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+      // update the picking ray with the camera and mouse position
+      raycaster.setFromCamera( mouse, camera );
+
+    // calculate objects intersecting the picking ray
+      var intersects = raycaster.intersectObjects(lmao, true);
+      if ( intersects.length > 0 ) {
+        console.log("Hit @ " + intersects[0].point.x.toString() + ', ' + intersects[0].point.y.toString() + ', ' + intersects[0].point.z.toString());
+        // change the color of the closest face.
+        //intersects[ 0 ].face.color.setRGB( 1, 0, 0 ); 
+        //intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
+        placementPos = new THREE.Vector3(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z);
+      }
+      else {
+        console.log("clickity click you missed the earthity earth");
+      }
+      for ( var i = 0; i < intersects.length; i++ ) {
+        //intersects[ i ].object.material.color.set( 0xffffff );
+      }
+      break;
+    }
+    case 1:  // middle click
+      break;
+    case 0: // right click
+      break;
+  }
+}
+
+
 
 // Update routine
 function update() {
   checkKeyboard()
   updateMaterials()
-
   requestAnimationFrame(update)
+  cameraControl.update()
   renderer.render(scene, camera)
 
 
