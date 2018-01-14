@@ -1,13 +1,15 @@
 
 //game stuff
-var socket = io();
+// var socket = io();
 
-Input.applyEventHandlers(); //might remove
+// Input.applyEventHandlers(); //might remove
 
-var game = Game.create(socket);
-game.init();
+// var game = Game.create(socket);
+// game.init();
 
 // Setup renderer
+
+console.log('begin')
 var canvas = document.getElementById('canvas');
 var renderer = new THREE.WebGLRenderer();
 renderer.setClearColor(0xFFFFFF);
