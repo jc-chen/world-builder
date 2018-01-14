@@ -11,7 +11,11 @@ import bpy
 # > cd <path to assets>
 # > blender -b -P fixQuads.py
 
+<<<<<<< HEAD
 for obj in glob.glob('C:/Users/jean_/Documents/world-builder/assets/NATURE/Models/*.obj'):
+=======
+for obj in glob.glob('*.obj'):
+>>>>>>> 1daaff87dcf03644db7edafacfba1a60797da13f
   bpy.ops.import_scene.obj(filepath=obj)
   model = bpy.data.objects[len(bpy.data.objects) - 1]
 
