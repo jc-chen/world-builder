@@ -2,10 +2,7 @@
   "name": "world-builder",
   "description": "A basic multiplayer world building game",
   "main": "server.js",
-  "authors": [
-    "Alvin Lin",
-    "Kenneth Li"
-  ],
+  "authors": [],
   "license": "MIT",
   "moduleType": [],
   "homepage": "",
