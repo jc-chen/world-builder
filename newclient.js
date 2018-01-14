@@ -9,6 +9,7 @@ game.init();
 */
 
 // Setup renderer
+var fuck;
 
 console.log('begin')
 var canvas = document.getElementById('canvas');
@@ -85,7 +86,7 @@ var placementPos;
 
 // XYZ axis helper
 var worldFrame = new THREE.AxisHelper(2);
-scene.add(worldFrame)
+scene.add(worldFrame);
 
 // Lighting
 var ambientLight = new THREE.AmbientLight('#fff');
@@ -96,7 +97,7 @@ light.position.set(-10,10,9);
 camera.add(light);
 
 // Uniforms
-var cameraPositionUniform = {type: "v3", value: camera.position }
+var cameraPositionUniform = {type: "v3", value: camera.position };
 var lightColorUniform = {type: "c", value: new THREE.Vector3(1.0, 1.0, 1.0) };
 var ambientColorUniform = {type: "c", value: new THREE.Vector3(1.0, 1.0, 1.0) };
 var kAmbientUniform = {type: "f", value: 0.1};
@@ -187,7 +188,7 @@ function loadOBJMTL(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
           fgeometry.fromBufferGeometry(child.geometry);
           //lmao = fgeometry.faces;
           
-          var fgfaces
+          var fgfaces;
           var faceGeom;
           var facepush;
           var faceMat;
@@ -220,12 +221,17 @@ function loadOBJMTL(file, mat, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
 // LOADING ASSETS
 var path = 'assets/NATURE/Models/naturePack_';
 //need a better way to load all assets
-var asset1o = path+'001.obj';
+/*var asset1o = path+'001.obj';
 var asset1m = path+'001.mtl';
 var asset2o = path+'007.obj';
 var asset2m = path+'007.mtl';
 var asset3o = path+'0012.obj';
 var asset3m = path+'0012.mtl';
+*/
+
+var ass1 = path + "001";
+var ass2 = path + "007";
+var ass3 = path + "012";
 
 
 function loadOBJ(file, material, scale, xOff, yOff, zOff, xRot, yRot, zRot) {
@@ -287,7 +293,6 @@ loadOBJ('public/obj/pureobjearthland.obj',landMaterial,1,0,0,0,0,0,0);
 var seaMaterial = new THREE.MeshPhongMaterial({color: 0x47A4C5});
 loadOBJ('public/obj/pureobjearthsea.obj',seaMaterial,1,0,0,0,0,0,0);
 
-
 var skyboxGeometry = new THREE.BoxGeometry(1000,1000,1000);
 var skybox = new THREE.Mesh(skyboxGeometry,skyboxMaterial);
 scene.add(skybox);
@@ -324,15 +329,16 @@ var keyboard = new THREEx.KeyboardState();
 function checkKeyboard() { }
 
 function updateMaterials() {
-  cameraPositionUniform.value = camera.position
+  cameraPositionUniform.value = camera.position;
  // light.position.set(camera.position.x-30,camera.position.y+30,camera.position.z-5);
-  armadilloMaterial.needsUpdate = true
-  skyboxMaterial.needsUpdate = true
+  armadilloMaterial.needsUpdate = true;
+  skyboxMaterial.needsUpdate = true;
 }
 
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
+var faceNormal;
 
 function onDocumentMouseDown( event ) {
   switch(event.button) {
@@ -352,6 +358,8 @@ function onDocumentMouseDown( event ) {
         //intersects[ 0 ].face.color.setRGB( 1, 0, 0 ); 
         //intersects[ 0 ].object.geometry.colorsNeedUpdate = true;
         placementPos = new THREE.Vector3(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z);
+        faceNormal = intersects[0].face.normal;
+        addAsset(ass3,0.1,placementPos,faceNormal);
       }
       else {
         console.log("clickity click you missed the earthity earth");
@@ -369,7 +377,6 @@ function onDocumentMouseDown( event ) {
 }
 
 
-
 // Returns if a value is really a number
 function isNumber (value) {
 return typeof value === 'number' && isFinite(value);
@@ -379,27 +386,37 @@ return typeof value === 'number' && isFinite(value);
 // Transforms from Cartesian to 3D Spherical coordinates
 function toSpherical (vec3) {
   var r = Math.sqrt(vec3.x*vec3.x + vec3.y*vec3.y + vec3.z*vec3.z);
-  var theta = Math.atan2(vec3.y,vec3.x);
-  var phi = Math.acos(vec3.z/r);
+  var theta = Math.atan2(vec3.x,vec3.z);
+  var phi = Math.acos(vec3.y/r);
   return new THREE.Vector3(r,theta,phi);
 }
 
 function toCartesian (vec3) {
-  var x = vec3.x*Math.cos(vec3.y)*Math.sin(vec3.z);
-  var y = vec3.x*Math.sin(vec3.y)*Math.sin(vec3.z);
-  var z = vec3.x*Math.cos(vec3.z);
+  var z = vec3.x*Math.cos(vec3.y)*Math.sin(vec3.z);
+  var x = vec3.x*Math.sin(vec3.y)*Math.sin(vec3.z);
+  var y = vec3.x*Math.cos(vec3.z);
   return new THREE.Vector3(x,y,z);
 }
 
-function 
+
+function addAsset(url,scale,position, facenormal) {
+  var sphericalPos = toSpherical(position);
+  var test = toSpherical(facenormal);
+  loadOBJMTL(url+'.obj',url+'.mtl',scale,position.x,position.y,position.z,sphericalPos.x,0,0);
+  fuck = toSpherical(placementPos);
+  console.log(fuck.x.toString(),fuck.y.toString(),fuck.z.toString());
+
+}
+
+
 
 // Update routine
 function update() {
-  checkKeyboard()
-  updateMaterials()
-  requestAnimationFrame(update)
-  cameraControl.update()
-  renderer.render(scene, camera)
+  checkKeyboard();
+  updateMaterials();
+  requestAnimationFrame(update);
+  cameraControl.update();
+  renderer.render(scene, camera);
 
 
   // UNCOMMENT BELOW FOR VR CAMERA
@@ -416,4 +433,4 @@ function update() {
 resize();
 update();
 
-console.log('done')
+console.log('done');
