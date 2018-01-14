@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: 'earth.blend'
 # www.blender.org
-mtllib earth.mtl
+mtllib testing.mtl
 o Land_
 v 0.162560 0.293209 1.000584
 v 0.162560 0.293209 1.000584
@@ -34066,7 +34066,6 @@ vn 0.6504 -0.7499 0.1206
 vn -0.8668 0.3398 0.3651
 vn -0.0083 0.9235 -0.3836
 vn -0.6601 0.7236 -0.2016
-g Land__Land__Land_Masses
 usemtl Land_Masses
 s off
 f 3714/1/1 1953/2/1 3330/3/1
@@ -40605,7 +40604,6 @@ vn -0.6968 0.4746 0.5379
 vn -0.5774 0.1440 -0.8037
 vn -0.1529 0.7365 -0.6589
 vn -0.6257 -0.1054 0.7729
-g Oceans_Oceans_Oceans
 usemtl Oceans
 s off
 f 15139/14598/4871 15232/14599/4871 15245/14600/4871
